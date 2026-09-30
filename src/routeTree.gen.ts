@@ -10,33 +10,177 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashRouteImport } from './routes/_dash'
+import { Route as DashAboutRouteImport } from './routes/_dash.about'
+import { Route as DashAnomaliesRouteImport } from './routes/_dash.anomalies'
+import { Route as DashDataRouteImport } from './routes/_dash.data'
+import { Route as DashDiscrepanciesRouteImport } from './routes/_dash.discrepancies'
+import { Route as DashEvidenceRouteImport } from './routes/_dash.evidence'
+import { Route as DashExplorerRouteImport } from './routes/_dash.explorer'
+import { Route as DashMethodologyRouteImport } from './routes/_dash.methodology'
+import { Route as DashOverviewRouteImport } from './routes/_dash.overview'
+import { Route as DashTraceRouteImport } from './routes/_dash.trace'
+import { Route as DashUploadsRouteImport } from './routes/_dash.uploads'
+import { Route as DashPuIdRouteImport } from './routes/_dash.pu.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashRoute = DashRouteImport.update({
+  id: '/_dash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashAboutRoute = DashAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashAnomaliesRoute = DashAnomaliesRouteImport.update({
+  id: '/anomalies',
+  path: '/anomalies',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashDataRoute = DashDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashDiscrepanciesRoute = DashDiscrepanciesRouteImport.update({
+  id: '/discrepancies',
+  path: '/discrepancies',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashEvidenceRoute = DashEvidenceRouteImport.update({
+  id: '/evidence',
+  path: '/evidence',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashExplorerRoute = DashExplorerRouteImport.update({
+  id: '/explorer',
+  path: '/explorer',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashMethodologyRoute = DashMethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashOverviewRoute = DashOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashTraceRoute = DashTraceRouteImport.update({
+  id: '/trace',
+  path: '/trace',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashUploadsRoute = DashUploadsRouteImport.update({
+  id: '/uploads',
+  path: '/uploads',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashPuIdRoute = DashPuIdRouteImport.update({
+  id: '/pu/$id',
+  path: '/pu/$id',
+  getParentRoute: () => DashRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof DashAboutRoute
+  '/anomalies': typeof DashAnomaliesRoute
+  '/data': typeof DashDataRoute
+  '/discrepancies': typeof DashDiscrepanciesRoute
+  '/evidence': typeof DashEvidenceRoute
+  '/explorer': typeof DashExplorerRoute
+  '/methodology': typeof DashMethodologyRoute
+  '/overview': typeof DashOverviewRoute
+  '/trace': typeof DashTraceRoute
+  '/uploads': typeof DashUploadsRoute
+  '/pu/$id': typeof DashPuIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof DashAboutRoute
+  '/anomalies': typeof DashAnomaliesRoute
+  '/data': typeof DashDataRoute
+  '/discrepancies': typeof DashDiscrepanciesRoute
+  '/evidence': typeof DashEvidenceRoute
+  '/explorer': typeof DashExplorerRoute
+  '/methodology': typeof DashMethodologyRoute
+  '/overview': typeof DashOverviewRoute
+  '/trace': typeof DashTraceRoute
+  '/uploads': typeof DashUploadsRoute
+  '/pu/$id': typeof DashPuIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_dash': typeof DashRouteWithChildren
+  '/_dash/about': typeof DashAboutRoute
+  '/_dash/anomalies': typeof DashAnomaliesRoute
+  '/_dash/data': typeof DashDataRoute
+  '/_dash/discrepancies': typeof DashDiscrepanciesRoute
+  '/_dash/evidence': typeof DashEvidenceRoute
+  '/_dash/explorer': typeof DashExplorerRoute
+  '/_dash/methodology': typeof DashMethodologyRoute
+  '/_dash/overview': typeof DashOverviewRoute
+  '/_dash/trace': typeof DashTraceRoute
+  '/_dash/uploads': typeof DashUploadsRoute
+  '/_dash/pu/$id': typeof DashPuIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/anomalies'
+    | '/data'
+    | '/discrepancies'
+    | '/evidence'
+    | '/explorer'
+    | '/methodology'
+    | '/overview'
+    | '/trace'
+    | '/uploads'
+    | '/pu/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/anomalies'
+    | '/data'
+    | '/discrepancies'
+    | '/evidence'
+    | '/explorer'
+    | '/methodology'
+    | '/overview'
+    | '/trace'
+    | '/uploads'
+    | '/pu/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_dash'
+    | '/_dash/about'
+    | '/_dash/anomalies'
+    | '/_dash/data'
+    | '/_dash/discrepancies'
+    | '/_dash/evidence'
+    | '/_dash/explorer'
+    | '/_dash/methodology'
+    | '/_dash/overview'
+    | '/_dash/trace'
+    | '/_dash/uploads'
+    | '/_dash/pu/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashRoute: typeof DashRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +192,126 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_dash': {
+      id: '/_dash'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_dash/about': {
+      id: '/_dash/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof DashAboutRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/anomalies': {
+      id: '/_dash/anomalies'
+      path: '/anomalies'
+      fullPath: '/anomalies'
+      preLoaderRoute: typeof DashAnomaliesRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/data': {
+      id: '/_dash/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DashDataRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/discrepancies': {
+      id: '/_dash/discrepancies'
+      path: '/discrepancies'
+      fullPath: '/discrepancies'
+      preLoaderRoute: typeof DashDiscrepanciesRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/evidence': {
+      id: '/_dash/evidence'
+      path: '/evidence'
+      fullPath: '/evidence'
+      preLoaderRoute: typeof DashEvidenceRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/explorer': {
+      id: '/_dash/explorer'
+      path: '/explorer'
+      fullPath: '/explorer'
+      preLoaderRoute: typeof DashExplorerRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/methodology': {
+      id: '/_dash/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof DashMethodologyRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/overview': {
+      id: '/_dash/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof DashOverviewRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/trace': {
+      id: '/_dash/trace'
+      path: '/trace'
+      fullPath: '/trace'
+      preLoaderRoute: typeof DashTraceRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/uploads': {
+      id: '/_dash/uploads'
+      path: '/uploads'
+      fullPath: '/uploads'
+      preLoaderRoute: typeof DashUploadsRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/_dash/pu/$id': {
+      id: '/_dash/pu/$id'
+      path: '/pu/$id'
+      fullPath: '/pu/$id'
+      preLoaderRoute: typeof DashPuIdRouteImport
+      parentRoute: typeof DashRoute
+    }
   }
 }
 
+interface DashRouteChildren {
+  DashAboutRoute: typeof DashAboutRoute
+  DashAnomaliesRoute: typeof DashAnomaliesRoute
+  DashDataRoute: typeof DashDataRoute
+  DashDiscrepanciesRoute: typeof DashDiscrepanciesRoute
+  DashEvidenceRoute: typeof DashEvidenceRoute
+  DashExplorerRoute: typeof DashExplorerRoute
+  DashMethodologyRoute: typeof DashMethodologyRoute
+  DashOverviewRoute: typeof DashOverviewRoute
+  DashTraceRoute: typeof DashTraceRoute
+  DashUploadsRoute: typeof DashUploadsRoute
+  DashPuIdRoute: typeof DashPuIdRoute
+}
+
+const DashRouteChildren: DashRouteChildren = {
+  DashAboutRoute: DashAboutRoute,
+  DashAnomaliesRoute: DashAnomaliesRoute,
+  DashDataRoute: DashDataRoute,
+  DashDiscrepanciesRoute: DashDiscrepanciesRoute,
+  DashEvidenceRoute: DashEvidenceRoute,
+  DashExplorerRoute: DashExplorerRoute,
+  DashMethodologyRoute: DashMethodologyRoute,
+  DashOverviewRoute: DashOverviewRoute,
+  DashTraceRoute: DashTraceRoute,
+  DashUploadsRoute: DashUploadsRoute,
+  DashPuIdRoute: DashPuIdRoute,
+}
+
+const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashRoute: DashRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
