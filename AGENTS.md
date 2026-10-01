@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Data access goes only through src/lib/api.ts (service layer); verification rules live in src/lib/verification.ts — so the demo dataset can be swapped for a real collector without UI changes.
