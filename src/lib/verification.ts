@@ -84,7 +84,7 @@ export function verifyRecords(records: ResultRecord[]): VerifiedRecord[] {
         add({ code: "UNUSUAL_TURNOUT", rule: "Unusual turnout pattern", detected: `${(turnout * 100).toFixed(1)}%`, expected: `~${(med * 100).toFixed(1)}% (median)`, explanation: `Turnout is ${Math.abs(z).toFixed(1)} robust deviations from the election median.`, severity: turnout > 0.9 ? "HIGH" : "MEDIUM" });
       }
     }
-    return { ...r, status: "MATCH" as const, irevTotal, officialTotal, difference, turnout, flags, anomalyScore: Math.min(1, Math.abs(z) / 6) };
+    return { ...r, status: "MATCH" as VerifiedRecord["status"], irevTotal, officialTotal, difference, turnout, flags, anomalyScore: Math.min(1, Math.abs(z) / 6) };
   }).map((v, _i, all) => {
     // Rule 8 — Spatial: compare with ward peers
     const own = leaderShare(v);
