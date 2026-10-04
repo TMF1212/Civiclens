@@ -11,6 +11,10 @@ export const RULES = [
   { code: "DUPLICATE_RECORD", name: "Duplicate record", test: "Polling-unit identifier appears more than once" },
   { code: "UNUSUAL_TURNOUT", name: "Unusual turnout pattern", test: "Turnout > 85% or robust z-score > 3" },
   { code: "UNUSUAL_SPATIAL", name: "Unusual spatial pattern", test: "Leading share deviates > 30 pts from ward peers" },
+  { code: "BALLOT_ACCOUNTING", name: "Ballot accounting inconsistency", test: "Spoiled + rejected + valid ≠ used, or issued − used ≠ unused" },
+  { code: "ISSUED_EXCEEDS_REGISTERED", name: "Ballots issued exceed registered voters", test: "Ballot papers issued > registered voters" },
+  { code: "ACCREDITED_VS_USED", name: "Accredited ≠ ballots used", test: "Accredited voters ≠ total used ballot papers" },
+  { code: "FORM_ANNOTATION", name: "Form legibility note", test: "Transcriber recorded overwrites, blanks or corrections" },
 ] as const;
 
 const sum = (o: Record<string, number | null>) =>
@@ -75,6 +79,28 @@ export function verifyRecords(records: ResultRecord[]): VerifiedRecord[] {
     // Rule 6 — Duplicate identifier
     if ((codeCount.get(r.puCode) ?? 0) > 1) {
       add({ code: "DUPLICATE_RECORD", rule: "Duplicate record", detected: `${codeCount.get(r.puCode)} records`, expected: "1 record per PU code", explanation: `Polling-unit identifier ${r.puCode} appears more than once in the dataset.`, severity: "MEDIUM" });
+    }
+    // Rule 9 — Ballot accounting (EC8A #5 + #6 + #7 = #8; #3 − #8 = #4). Blank fields are skipped, not assumed 0.
+    if (r.used != null) {
+      if (r.spoiled != null && r.rejected != null && r.irev?.declaredTotal != null) {
+        const s = r.spoiled + r.rejected + r.irev.declaredTotal;
+        if (s !== r.used) add({ code: "BALLOT_ACCOUNTING", rule: "Ballot accounting inconsistency", detected: `Spoiled+rejected+valid ${fmt(s)}`, expected: `Used ${fmt(r.used)}`, explanation: `Spoiled, rejected and valid ballots add up to ${fmt(s)} but the form records ${fmt(r.used)} used ballot papers.`, severity: "MEDIUM" });
+      }
+      if (r.issued != null && r.unused != null && r.issued - r.used !== r.unused) {
+        add({ code: "BALLOT_ACCOUNTING", rule: "Ballot accounting inconsistency", detected: `Unused ${fmt(r.unused)}`, expected: `Issued − used = ${fmt(r.issued - r.used)}`, explanation: `${fmt(r.issued)} issued minus ${fmt(r.used)} used should leave ${fmt(r.issued - r.used)} unused, but the form records ${fmt(r.unused)}.`, severity: "LOW" });
+      }
+    }
+    // Rule 10 — Issued exceeds registered
+    if (r.issued != null && r.registered && r.issued > r.registered) {
+      add({ code: "ISSUED_EXCEEDS_REGISTERED", rule: "Ballots issued exceed registered voters", detected: `Issued ${fmt(r.issued)}`, expected: `≤ ${fmt(r.registered)} registered`, explanation: `The form records ${fmt(r.issued - r.registered)} more ballot papers issued than registered voters. Often a recording error; check the original form.`, severity: "LOW" });
+    }
+    // Rule 11 — Accredited vs used
+    if (r.used != null && r.accredited != null && r.used !== r.accredited) {
+      add({ code: "ACCREDITED_VS_USED", rule: "Accredited ≠ ballots used", detected: `Accredited ${fmt(r.accredited)}`, expected: `Used ${fmt(r.used)}`, explanation: `Accredited voters differ from ballot papers used by ${fmt(Math.abs(r.accredited - r.used))}.`, severity: r.used > r.accredited ? "HIGH" : "MEDIUM" });
+    }
+    // Rule 12 — Transcriber notes about the physical form
+    if (r.formNotes?.length) {
+      add({ code: "FORM_ANNOTATION", rule: "Form legibility note", detected: `${r.formNotes.length} note(s)`, expected: "Clean, unaltered form", explanation: r.formNotes.join(" "), severity: "LOW" });
     }
     // Rule 7 — Unusual turnout (robust z-score)
     let z = 0;

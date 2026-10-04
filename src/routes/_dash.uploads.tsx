@@ -22,17 +22,18 @@ function Page() {
   );
 }
 
-type U = "Missing" | "Delayed" | "Incomplete" | "On time";
+type U = "Missing" | "Delayed" | "Incomplete" | "On time" | "Time unknown";
 function uploadState(r: VerifiedRecord, electionDate: string): U {
   if (!r.irev) return "Missing";
   if (r.status === "INCOMPLETE") return "Incomplete";
-  if (r.irev.timestamp) {
+  if (!r.irev.timestamp) return "Time unknown";
+  {
     const close = new Date(`${electionDate}T14:30:00+01:00`).getTime();
-    if (new Date(r.irev.timestamp).getTime() - close > 3 * 3600_000) return "Delayed";
+    if (new Date(r.irev.timestamp!).getTime() - close > 3 * 3600_000) return "Delayed";
   }
   return "On time";
 }
-const tone = { Missing: "steel", Delayed: "warn", Incomplete: "steel", "On time": "ok" } as const;
+const tone = { Missing: "steel", Delayed: "warn", Incomplete: "steel", "On time": "ok", "Time unknown": "neutral" } as const;
 
 function Body({ rows }: { rows: VerifiedRecord[] }) {
   const { electionId } = useAppStore();
@@ -41,13 +42,14 @@ function Body({ rows }: { rows: VerifiedRecord[] }) {
   const withState = rows.map((r) => ({ r, u: uploadState(r, date) }));
   const count = (u: U) => withState.filter((x) => x.u === u).length;
   const lgas = [...new Set(rows.map((r) => r.lga))];
-  const list = withState.filter((x) => (filter ? x.u === filter : x.u !== "On time"));
+  const list = withState.filter((x) => (filter ? x.u === filter : x.u !== "On time" && x.u !== "Time unknown"));
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-sm border border-border md:grid-cols-4">
+      <div className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-sm border border-border md:grid-cols-5">
         <Kpi label="On time" value={fmt(count("On time"))} note={pct(count("On time") / rows.length)} tone="accent" />
         <Kpi label="Delayed" value={fmt(count("Delayed"))} note="> 3h after close" tone="warn" />
         <Kpi label="Incomplete" value={fmt(count("Incomplete"))} note="values unreadable" tone="steel" />
+        <Kpi label="Time unknown" value={fmt(count("Time unknown"))} note="no upload time in source" />
         <Kpi label="Missing" value={fmt(count("Missing"))} note="no upload found" tone="steel" />
       </div>
       <Panel title="Upload completeness by LGA" bodyClass="space-y-3">
@@ -69,7 +71,7 @@ function Body({ rows }: { rows: VerifiedRecord[] }) {
       </Panel>
       <Panel title="Units needing follow-up" meta={`${list.length} units`} bodyClass="p-0">
         <div className="flex flex-wrap gap-1.5 border-b border-border p-3 text-[12px]">
-          {(["", "Missing", "Delayed", "Incomplete", "On time"] as const).map((u) => (
+          {(["", "Missing", "Delayed", "Incomplete", "On time", "Time unknown"] as const).map((u) => (
             <button key={u} onClick={() => setFilter(u)} className={`rounded-sm border px-2 py-1 ${filter === u ? "border-primary bg-accent text-accent-foreground" : "border-border bg-panel"}`}>{u || "All issues"}</button>
           ))}
         </div>

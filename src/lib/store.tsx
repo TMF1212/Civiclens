@@ -18,16 +18,16 @@ interface Ctx {
 const C = createContext<Ctx | null>(null);
 
 export function AppStoreProvider({ children }: { children: ReactNode }) {
-  const [electionId, setE] = useState("ekiti-gov-2026");
+  const [electionId, setE] = useState("ekiti-gov-2026-ec8a");
   const [reviews, setReviews] = useState<Record<string, ReviewStatus>>({});
   const [audit, setAudit] = useState<AuditEntry[]>([
-    { at: new Date().toISOString(), action: "Data imported", detail: "Demo / synthetic dataset loaded (session)" },
-    { at: new Date().toISOString(), action: "Verification performed", detail: "8 rules executed on all records" },
+    { at: new Date().toISOString(), action: "Data imported", detail: "EC8A transcription (12 polling units) loaded from uploaded spreadsheet" },
+    { at: new Date().toISOString(), action: "Verification performed", detail: "Verification rules executed on all records" },
   ]);
   const [imports, setImports] = useState<ImportEntry[]>([]);
 
   useEffect(() => {
-    const s = localStorage.getItem("rl-election");
+    const s = localStorage.getItem("rl-election2");
     if (s) setE(s);
   }, []);
 
@@ -40,7 +40,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         electionId,
         setElectionId: (id) => {
           setE(id);
-          localStorage.setItem("rl-election", id);
+          localStorage.setItem("rl-election2", id);
           log("Election selected", id);
         },
         reviews,

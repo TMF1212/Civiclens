@@ -6,6 +6,7 @@ import { ELECTIONS } from "@/lib/demo-data";
 import { getElection } from "@/lib/api";
 import { useAppStore } from "@/lib/store";
 import { Tag } from "@/components/rl";
+import { RULES } from "@/lib/verification";
 
 export const Route = createFileRoute("/_dash")({ component: DashLayout });
 
@@ -58,21 +59,21 @@ function DashLayout() {
           ))}
         </nav>
         <div className="space-y-1.5 border-t border-border px-4 py-4 font-mono text-[10px] text-muted-foreground">
-          <div className="flex justify-between"><span>Source</span><span className="text-foreground">{e.dataSource === "demo" ? "Synthetic" : "IReV / INEC"}</span></div>
-          <div className="flex justify-between"><span>Rules</span><span className="text-foreground">8 active</span></div>
+          <div className="flex justify-between"><span>Source</span><span className="text-foreground">{e.dataSource === "demo" ? "Synthetic" : e.dataSource === "imported" ? "EC8A transcription" : "IReV / INEC"}</span></div>
+          <div className="flex justify-between"><span>Rules</span><span className="text-foreground">{RULES.length} active</span></div>
         </div>
       </aside>
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
           <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-5">
             <div className="flex flex-col"><span className="eyebrow !text-[9px]">Election</span><ElectionSelector /></div>
-            {e.dataSource === "demo" ? <Tag tone="warn">Demo mode</Tag> : <Tag tone="accent">Data source: IReV / INEC</Tag>}
+            {e.dataSource === "demo" ? <Tag tone="warn">Demo mode</Tag> : e.dataSource === "imported" ? <Tag tone="accent">Source: EC8A forms (user-supplied)</Tag> : <Tag tone="accent">Data source: IReV / INEC</Tag>}
             <form className="relative ml-auto" onSubmit={(ev) => { ev.preventDefault(); nav({ to: "/explorer", search: { q } }); }}>
               <Search className="absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <input value={q} onChange={(ev) => setQ(ev.target.value)} placeholder="PU code, name, ward, LGA" className="h-8 w-56 rounded-sm border border-input bg-panel pl-7 pr-2 text-[12px] outline-none focus:ring-1 focus:ring-ring" />
             </form>
             <span className="hidden font-mono text-[11px] text-muted-foreground lg:inline">
-              Updated {e.lastUpdated ? new Date(e.lastUpdated).toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" }) : "—"}
+              {e.lastUpdated ? "Updated " : ""}{e.lastUpdated ? new Date(e.lastUpdated).toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" }) : ""}
             </span>
           </div>
           <nav className="flex gap-1 overflow-x-auto border-t border-border px-3 py-1.5 text-[12px] md:hidden">

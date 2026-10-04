@@ -44,7 +44,7 @@ export const ReviewBadge = ({ s }: { s: ReviewStatus }) => <Tag tone={reviewTone
 export function useReview() {
   const { reviews } = useAppStore();
   return (r: VerifiedRecord): ReviewStatus =>
-    reviews[r.id] ?? (r.flags.length === 0 ? "Verified Match" : Number(r.id.slice(-2)) % 5 === 0 ? "Under Review" : "Unreviewed");
+    reviews[r.id] ?? (!r.synthetic ? "Unreviewed" : r.flags.length === 0 ? "Verified Match" : Number(r.id.slice(-2)) % 5 === 0 ? "Under Review" : "Unreviewed");
 }
 
 export function PageHeader({ title, sub, right }: { title: string; sub?: string; right?: ReactNode }) {
@@ -76,7 +76,13 @@ export function Panel({ title, meta, children, className, bodyClass }: { title?:
 export function DemoNotice() {
   const { electionId } = useAppStore();
   const e = getElection(electionId);
-  if (e.dataSource !== "demo") return null;
+  if (e.dataSource !== "demo")
+    return (
+      <div className="mb-5 flex items-start gap-2 rounded-sm border border-primary/25 bg-accent px-3 py-2 text-[12px] text-accent-foreground">
+        <Database className="mt-0.5 size-3.5 shrink-0" />
+        <span><b className="font-mono">DATA SOURCE:</b> {e.sourceLabel}. No officially announced/collated polling-unit totals have been supplied yet, so results show as PENDING reconciliation; form-level checks still run.</span>
+      </div>
+    );
   return (
     <div className="mb-5 flex items-start gap-2 rounded-sm border border-warn/25 bg-warn-soft px-3 py-2 text-[12px] text-warn">
       <Database className="mt-0.5 size-3.5 shrink-0" />
@@ -159,10 +165,10 @@ export const EVIDENCE_STEPS = ["Source", "Raw record", "Normalized record", "Ver
 
 export function EvidenceChain({ r, review }: { r: VerifiedRecord; review: ReviewStatus }) {
   const items = [
-    { t: "Source", d: r.sourceUrl ?? "Demo / synthetic generator (no external source)", ok: true },
+    { t: "Source", d: r.sourceUrl ?? (r.synthetic ? "Demo / synthetic generator (no external source)" : `EC8A form ${r.formSN ?? ""} — user-supplied transcription`), ok: true },
     { t: "Raw record", d: r.irev ? `Result sheet values captured ${r.irev.timestamp ? new Date(r.irev.timestamp).toLocaleString("en-NG") : ""} · OCR confidence ${r.ocrConfidence ? Math.round(r.ocrConfidence * 100) + "%" : "n/a"}` : "No raw upload found", ok: !!r.irev },
     { t: "Normalized record", d: `PU ${r.puCode} · ${Object.keys(r.irev?.candidates ?? {}).length} candidate fields mapped · raw values preserved`, ok: !!r.irev },
-    { t: "Verification rule", d: r.flags.length ? r.flags.map((f) => f.rule).join(" · ") : "All 8 rules passed", ok: true },
+    { t: "Verification rule", d: r.flags.length ? r.flags.map((f) => f.rule).join(" · ") : "All verification rules passed", ok: true },
     { t: "Flag", d: r.flags.length ? `${r.flags.length} flag(s) — highest ${r.flags.map((f) => f.severity).sort().at(0)}` : "No flag raised", ok: r.flags.length === 0 },
     { t: "Human review", d: review, ok: review !== "Unreviewed" },
   ];

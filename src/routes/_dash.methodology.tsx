@@ -12,7 +12,7 @@ const STEPS = [
   ["Data acquisition", "Polling-unit result sheets and officially announced/collated figures are collected from public sources. In demo mode, a synthetic generator stands in for these sources."],
   ["Data normalization", "Identifiers, names and candidate fields are standardised. Raw values are preserved alongside normalized values; nothing is silently overwritten."],
   ["Result reconciliation", "For each polling unit, the uploaded (IReV) total is compared with the official total, candidate by candidate."],
-  ["Rule-based validation", "Eight transparent rules check totals, accreditation, internal consistency, completeness and duplicates."],
+  ["Rule-based validation", "Transparent rules check totals, ballot accounting, accreditation, internal consistency, completeness and duplicates."],
   ["Statistical anomaly detection", "Robust statistics (median / MAD) and ward-peer comparisons surface unusual turnout and spatial patterns. ML models can be added later."],
   ["Evidence preservation", "Every flag links to source, raw values, rule, reference value and timestamp, forming an evidence chain."],
   ["Human review", "Reviewers record a decision for each flag. The system never labels a record as fraud."],

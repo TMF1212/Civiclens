@@ -2,13 +2,14 @@
 // later swap implementations for FastAPI (API_BASE_URL) / database calls without touching UI.
 import { ELECTIONS, generateDemoRecords } from "./demo-data";
 import { verifyRecords } from "./verification";
+import { loadEc8aRecords } from "./ec8a-data";
 import type { Flag, Severity, VerifiedRecord } from "./types";
 
 const delay = <T,>(v: T) => new Promise<T>((r) => setTimeout(() => r(v), 60));
 const store = new Map<string, VerifiedRecord[]>();
 
 function all(electionId: string) {
-  if (!store.has(electionId)) store.set(electionId, verifyRecords(generateDemoRecords(electionId)));
+  if (!store.has(electionId)) store.set(electionId, verifyRecords(electionId === "ekiti-gov-2026-ec8a" ? loadEc8aRecords(electionId) : generateDemoRecords(electionId)));
   return store.get(electionId)!;
 }
 

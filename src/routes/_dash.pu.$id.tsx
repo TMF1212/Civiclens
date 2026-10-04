@@ -23,7 +23,7 @@ const REVIEWS: ReviewStatus[] = ["Unreviewed", "Under Review", "Verified Match",
 
 function reason(r: VerifiedRecord) {
   if (r.status === "MISSING") return "No polling-unit result upload was found, so reconciliation could not be performed.";
-  if (r.status === "PENDING") return "The uploaded result is available, but the corresponding official figure has not been received.";
+  if (r.status === "PENDING") return "The polling-unit result is available, but no officially announced/collated figure for this unit has been supplied, so totals cannot be reconciled yet. Form-level checks below still apply.";
   if (r.status === "INCOMPLETE") return "The result sheet exists but one or more values could not be extracted; manual review of the sheet is needed.";
   if (r.status === "MISMATCH") return `IReV total differs from the corresponding official total by ${fmt(Math.abs(r.difference ?? 0))} votes.`;
   return "IReV total matches the corresponding official total.";
@@ -50,6 +50,15 @@ function Body({ r }: { r: VerifiedRecord }) {
           <Panel title="IReV / uploaded result vs official result" meta={`Registered ${fmt(r.registered)} · Accredited ${fmt(r.accredited)} · Turnout ${pct(r.turnout)}`} bodyClass="p-0">
             {r.irev || r.official ? <ResultComparison r={r} /> : <div className="p-4"><EmptyState title="No result data" body="Neither source has values for this polling unit." /></div>}
           </Panel>
+          {r.used !== undefined && (
+            <Panel title="EC8A ballot accounting (as written on the form)" bodyClass="p-0">
+              <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4">
+                {([["#1 Registered", r.registered], ["#2 Accredited", r.accredited], ["#3 Issued", r.issued], ["#4 Unused", r.unused], ["#5 Spoiled", r.spoiled], ["#6 Rejected", r.rejected], ["#7 Valid", r.irevTotal], ["#8 Used", r.used]] as const).map(([k, v]) => (
+                  <div key={k} className="p-3"><div className="eyebrow">{k}</div><div className="num mt-1 text-[15px]">{v == null ? <span className="text-steel text-[12px]">blank on form</span> : fmt(v)}</div></div>
+                ))}
+              </div>
+            </Panel>
+          )}
           <Panel title="Verification summary">
             <div className="flex flex-wrap items-center gap-6">
               <div><div className="eyebrow">Status</div><div className="mt-1"><VerificationBadge status={r.status} /></div></div>
@@ -59,7 +68,7 @@ function Body({ r }: { r: VerifiedRecord }) {
             <p className="mt-3 text-[13px]"><span className="eyebrow mr-2">Reason</span>{reason(r)}</p>
           </Panel>
           <Panel title="Rule flags" meta="Severity indicates verification priority, not evidence of wrongdoing." bodyClass="p-0">
-            {r.flags.length === 0 ? <p className="p-4 text-[13px] text-muted-foreground">All 8 verification rules passed.</p> : (
+            {r.flags.length === 0 ? <p className="p-4 text-[13px] text-muted-foreground">All verification rules passed.</p> : (
               <ul className="divide-y divide-border">
                 {r.flags.map((f) => (
                   <li key={f.code} className="grid gap-2 p-4 sm:grid-cols-[1fr_auto]">
