@@ -103,7 +103,7 @@ function Landing() {
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 lg:grid-cols-2">
           <div>
             <div className="eyebrow">Evidence-based verification</div>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Eight transparent rules</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Transparent, explainable rules</h2>
             <p className="mt-3 text-[13px] text-muted-foreground">Every flag states the rule, the detected value, the reference value and an explanation. Severity indicates verification priority, not evidence of wrongdoing.</p>
             <p className="mt-4 text-[13px] text-muted-foreground"><b className="text-foreground">Technology:</b> React + TypeScript front end, PostgreSQL-ready data model, and a service layer prepared for a Python verification and ingestion service.</p>
           </div>

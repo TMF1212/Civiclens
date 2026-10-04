@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, Legend, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
 import { DemoNotice, PageHeader, Panel, PULink, ReviewBadge, Tag, WithRecords, td, th, useReview } from "@/components/rl";
 import { pct } from "@/lib/store";
-import { CANDIDATES } from "@/lib/demo-data";
+import { getElection } from "@/lib/api";
+import { useAppStore } from "@/lib/store";
 import { meta } from "@/lib/meta";
 import type { VerifiedRecord } from "@/lib/types";
 
@@ -26,13 +27,18 @@ function Page() {
 
 function Body({ rows }: { rows: VerifiedRecord[] }) {
   const review = useReview();
+  const { electionId } = useAppStore();
+  const allC = getElection(electionId).candidates;
+  const totals = allC.map((c) => [c, rows.reduce((a, r) => a + (r.irev?.candidates[c] ?? 0), 0)] as const).sort((a, b) => b[1] - a[1]);
+  const top = totals.slice(0, 3).map(([c]) => c);
+  const CANDIDATES = allC.length > 4 ? [...top, "Others"] : allC;
   const scatter = rows.filter((r) => r.accredited && r.irevTotal != null).map((r) => ({ x: r.accredited!, y: r.irevTotal!, name: r.puCode }));
   const maxX = Math.max(...scatter.map((s) => s.x), 1);
   const turnout = rows.filter((r) => r.turnout != null).map((r) => ({ name: r.puCode.split("/").slice(-2).join("/"), t: +(r.turnout! * 100).toFixed(1) }));
   const lgas = [...new Set(rows.map((r) => r.lga))].map((l) => {
     const lr = rows.filter((r) => r.lga === l && r.irev);
     const o: Record<string, number | string> = { name: l };
-    CANDIDATES.forEach((c) => (o[c] = lr.reduce((a, r) => a + (r.irev!.candidates[c] ?? 0), 0)));
+    allC.forEach((c) => { const k = CANDIDATES.includes(c) ? c : "Others"; o[k] = ((o[k] as number) ?? 0) + lr.reduce((a, r) => a + (r.irev!.candidates[c] ?? 0), 0); });
     return o;
   });
   const wards = [...new Set(rows.map((r) => `${r.lga}|${r.ward}`))].map((k) => {
