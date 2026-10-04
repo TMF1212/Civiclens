@@ -44,7 +44,7 @@ export const ReviewBadge = ({ s }: { s: ReviewStatus }) => <Tag tone={reviewTone
 export function useReview() {
   const { reviews } = useAppStore();
   return (r: VerifiedRecord): ReviewStatus =>
-    reviews[r.id] ?? (r.flags.length === 0 ? "Verified Match" : Number(r.id.slice(-2)) % 5 === 0 ? "Under Review" : "Unreviewed");
+    reviews[r.id] ?? (!r.synthetic ? "Unreviewed" : r.flags.length === 0 ? "Verified Match" : Number(r.id.slice(-2)) % 5 === 0 ? "Under Review" : "Unreviewed");
 }
 
 export function PageHeader({ title, sub, right }: { title: string; sub?: string; right?: ReactNode }) {

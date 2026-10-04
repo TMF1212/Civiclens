@@ -3,4 +3,6 @@
 - [x] Demo dataset (synthetic, labelled) + service layer + verification rule engine
 - [x] Landing, Overview, Explorer, PU verification, Discrepancies, Anomalies, Evidence, Trace, Election Data, Methodology, About
 - [x] Follow-up brief: IReV vs collated discrepancy checker, unusual-pattern dashboard, missing/delayed/incomplete upload tracker (Uploads page)
-- [ ] Real data: connect Lovable Cloud + Python IReV collector (waits on user-provided validated data source)
+- [x] Real data: EC8A transcription (12 Ekiti PUs) loaded as default election
+- [ ] Official collated per-PU totals for reconciliation (waits on user-supplied file)
+- [ ] Persistence (database) for imports and reviews (not yet requested)
