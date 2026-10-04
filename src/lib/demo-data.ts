@@ -1,13 +1,27 @@
 // DEMO / SYNTHETIC DATA — generated deterministically. These are NOT real election results.
 // Replace via src/lib/api.ts once the IReV collector / database is connected.
 import type { Election, ResultRecord, SourceResult } from "./types";
+import { EC8A_NOTES, EC8A_PARTIES } from "./ec8a-data";
 
 export const CANDIDATES = ["Candidate A", "Candidate B", "Candidate C", "Candidate D"];
 
 export const ELECTIONS: Election[] = [
   {
-    id: "ekiti-gov-2026",
+    id: "ekiti-gov-2026-ec8a",
     name: "Ekiti Governorship Election 2026",
+    type: "governorship",
+    date: "2026-06-20",
+    states: ["Ekiti"],
+    candidates: EC8A_PARTIES,
+    dataSource: "imported",
+    sourceLabel: "User-supplied transcription of EC8A polling-unit result forms (12 units)",
+    datasetNotes: EC8A_NOTES,
+    lastUpdated: null,
+    hasData: true,
+  },
+  {
+    id: "ekiti-gov-2026",
+    name: "Ekiti Governorship 2026 (demo)",
     type: "governorship",
     date: "2026-06-20",
     states: ["Ekiti"],
@@ -18,7 +32,7 @@ export const ELECTIONS: Election[] = [
   },
   {
     id: "osun-gov-2026",
-    name: "Osun Governorship Election 2026",
+    name: "Osun Governorship 2026 (demo)",
     type: "governorship",
     date: "2026-08-08",
     states: ["Osun"],

@@ -1,6 +1,6 @@
 // Core domain types. Mirrors the PostgreSQL model (see supabase-schema.sql).
 
-export type DataSource = "demo" | "irev";
+export type DataSource = "demo" | "irev" | "imported";
 
 export interface Election {
   id: string;
@@ -10,6 +10,10 @@ export interface Election {
   states: string[];
   candidates: string[];
   dataSource: DataSource;
+  /** Human-readable provenance shown in the UI. */
+  sourceLabel?: string;
+  /** Notes that apply to the whole dataset. */
+  datasetNotes?: string[];
   lastUpdated: string | null;
   hasData: boolean;
 }
@@ -31,7 +35,11 @@ export type RuleCode =
   | "INCOMPLETE_RESULT"
   | "DUPLICATE_RECORD"
   | "UNUSUAL_TURNOUT"
-  | "UNUSUAL_SPATIAL";
+  | "UNUSUAL_SPATIAL"
+  | "BALLOT_ACCOUNTING"
+  | "ISSUED_EXCEEDS_REGISTERED"
+  | "ACCREDITED_VS_USED"
+  | "FORM_ANNOTATION";
 
 export interface SourceResult {
   /** Candidate -> votes. null value = not extracted. */
@@ -57,7 +65,16 @@ export interface ResultRecord {
   ocrConfidence: number | null;
   resultImageUrl: string | null;
   sourceUrl: string | null;
-  synthetic: true;
+  synthetic: boolean;
+  /** Full EC8A ballot accounting, when the source provides it. */
+  formSN?: string;
+  issued?: number | null;
+  unused?: number | null;
+  spoiled?: number | null;
+  rejected?: number | null;
+  used?: number | null;
+  /** Transcriber notes about the physical form (overwrites, blanks, corrections). */
+  formNotes?: string[];
 }
 
 export interface Flag {
