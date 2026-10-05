@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      election_audit: {
+        Row: {
+          action: string
+          created_at: string
+          detail: string
+          election_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          detail: string
+          election_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          detail?: string
+          election_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      election_imports: {
+        Row: {
+          created_at: string
+          election_id: string
+          file_name: string
+          id: string
+          kind: string
+          records: Json
+          row_count: number
+          status: string
+          updated_at: string
+          valid_count: number
+        }
+        Insert: {
+          created_at?: string
+          election_id: string
+          file_name: string
+          id?: string
+          kind: string
+          records?: Json
+          row_count?: number
+          status: string
+          updated_at?: string
+          valid_count?: number
+        }
+        Update: {
+          created_at?: string
+          election_id?: string
+          file_name?: string
+          id?: string
+          kind?: string
+          records?: Json
+          row_count?: number
+          status?: string
+          updated_at?: string
+          valid_count?: number
+        }
+        Relationships: []
+      }
+      election_reviews: {
+        Row: {
+          created_at: string
+          election_id: string
+          note: string | null
+          record_id: string
+          review_status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          election_id: string
+          note?: string | null
+          record_id: string
+          review_status: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          election_id?: string
+          note?: string | null
+          record_id?: string
+          review_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
