@@ -5,4 +5,4 @@
 - [x] Follow-up brief: IReV vs collated discrepancy checker, unusual-pattern dashboard, missing/delayed/incomplete upload tracker (Uploads page)
 - [x] Real data: EC8A transcription (12 Ekiti PUs) loaded as default election
 - [ ] Official collated per-PU totals for reconciliation (waits on user-supplied file)
-- [ ] Persistence (database) for imports and reviews (not yet requested)
+- [ ] Persistence (database) for imports, review decisions, and audit history
