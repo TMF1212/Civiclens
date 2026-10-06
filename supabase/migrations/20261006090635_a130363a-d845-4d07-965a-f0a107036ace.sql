@@ -1,0 +1,1 @@
+REVOKE UPDATE ON public.election_imports, public.election_audit FROM anon, authenticated;

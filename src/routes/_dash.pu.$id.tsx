@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { DemoNotice, EmptyState, EvidenceChain, LoadingState, PageHeader, Panel, ResultComparison, ReviewBadge, SeverityBadge, VerificationBadge, useReview } from "@/components/rl";
 import { getResult } from "@/lib/api";
 import { fmt, pct, signed, useAppStore } from "@/lib/store";
@@ -88,7 +89,7 @@ function Body({ r }: { r: VerifiedRecord }) {
           <Panel title="Human review" meta={<ReviewBadge s={review} />}>
             <div className="grid gap-1.5">
               {REVIEWS.map((s) => (
-                <button key={s} onClick={() => setReview(r.id, s)} className={`rounded-sm border px-2.5 py-1.5 text-left text-[12px] ${s === review ? "border-primary bg-accent text-accent-foreground font-medium" : "border-border hover:bg-muted"}`}>{s}</button>
+                <button key={s} onClick={() => void setReview(r.id, s).then(() => toast.success("Review decision saved and shared.")).catch(() => toast.error("Could not save this review decision. Please try again."))} className={`rounded-sm border px-2.5 py-1.5 text-left text-[12px] ${s === review ? "border-primary bg-accent text-accent-foreground font-medium" : "border-border hover:bg-muted"}`}>{s}</button>
               ))}
             </div>
             <p className="mt-3 text-[11px] text-muted-foreground">Decisions are written to the audit log. Records can never be labelled as fraud.</p>

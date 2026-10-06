@@ -3,6 +3,9 @@
 import { ELECTIONS, generateDemoRecords } from "./demo-data";
 import { verifyRecords } from "./verification";
 import { loadEc8aRecords } from "./ec8a-data";
+import { supabase } from "@/integrations/supabase/client";
+import type { AuditEntry, ImportEntry } from "./store";
+import type { ReviewStatus } from "./types";
 import type { Flag, Severity, VerifiedRecord } from "./types";
 
 const delay = <T,>(v: T) => new Promise<T>((r) => setTimeout(() => r(v), 60));
@@ -49,5 +52,58 @@ export const runVerification = (e: string) => {
   store.delete(e);
   return delay(all(e));
 };
+
+export async function getSharedData(electionId: string) {
+  const [reviews, imports, audit] = await Promise.all([
+    supabase.from("election_reviews").select("record_id, review_status").eq("election_id", electionId),
+    supabase.from("election_imports").select("id, created_at, file_name, kind, row_count, valid_count, status").eq("election_id", electionId).order("created_at", { ascending: false }).limit(100),
+    supabase.from("election_audit").select("created_at, action, detail").eq("election_id", electionId).order("created_at", { ascending: false }).limit(100),
+  ]);
+  if (reviews.error) throw reviews.error;
+  if (imports.error) throw imports.error;
+  if (audit.error) throw audit.error;
+  return {
+    reviews: Object.fromEntries((reviews.data ?? []).map((r) => [r.record_id, r.review_status as ReviewStatus])),
+    imports: (imports.data ?? []).map((i) => ({ id: i.id, at: i.created_at, file: i.file_name, kind: i.kind, rows: i.row_count, valid: i.valid_count, status: i.status } satisfies ImportEntry)),
+    audit: (audit.data ?? []).map((a) => ({ at: a.created_at, action: a.action, detail: a.detail } satisfies AuditEntry)),
+  };
+}
+
+export async function saveSharedAudit(electionId: string, action: string, detail: string) {
+  const { error } = await supabase.from("election_audit").insert({ election_id: electionId, action, detail });
+  if (error) throw error;
+}
+
+export async function saveSharedReview(electionId: string, recordId: string, status: ReviewStatus, note?: string) {
+  const { error } = await supabase.from("election_reviews").upsert(
+    { election_id: electionId, record_id: recordId, review_status: status, note: note ?? null },
+    { onConflict: "election_id,record_id" },
+  );
+  if (error) throw error;
+  await saveSharedAudit(electionId, "Reviewer decision", `${recordId} → ${status}${note ? ` — ${note}` : ""}`);
+}
+
+export async function saveSharedImport(input: {
+  electionId: string;
+  file: string;
+  kind: string;
+  rows: number;
+  valid: number;
+  status: string;
+  records: Record<string, string>[];
+}) {
+  const { data, error } = await supabase.from("election_imports").insert({
+    election_id: input.electionId,
+    file_name: input.file,
+    kind: input.kind,
+    row_count: input.rows,
+    valid_count: input.valid,
+    status: input.status,
+    records: input.records,
+  }).select("id, created_at, file_name, kind, row_count, valid_count, status").single();
+  if (error) throw error;
+  await saveSharedAudit(input.electionId, "Data imported", `${input.file} (${input.valid}/${input.rows} valid rows)`);
+  return { id: data.id, at: data.created_at, file: data.file_name, kind: data.kind, rows: data.row_count, valid: data.valid_count, status: data.status } satisfies ImportEntry;
+}
 
 export const severityRank: Record<Severity, number> = { HIGH: 3, MEDIUM: 2, LOW: 1 };
