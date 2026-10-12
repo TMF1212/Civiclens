@@ -12,6 +12,8 @@
 
 [**Explore the Live Application**](https://civiclens-matthew-falades-projects.vercel.app/trace?id=ekiti-gov-2026-ec8a-0003)
 
+YouTube Demonstration: https://youtu.be/lHLi8gUaM2Q?si=UNZO26HAEeGPHIcb
+
 ---
 
 ## 1. Project Overview
